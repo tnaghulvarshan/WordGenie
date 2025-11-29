@@ -34,9 +34,9 @@ function Navbar() {
             <Link to="/" className="nav-item mx-2">
               <a className="nav-link fw-semibold text-dark" href="#">Home</a>
             </Link>
-            <li className="nav-item mx-2">
+            <Link to="/drafts" className="nav-item mx-2">
               <a className="nav-link fw-semibold text-dark" href="#">Drafts</a>
-            </li>
+            </Link>
              <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
            Settings

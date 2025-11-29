@@ -4,19 +4,23 @@ const { generateMessage } = require("../utils/geminiApi"); // Import your new he
 
 exports.AIResponse = async (req, res) => {
   try {
-    const { topic, subject, tone } = req.body;
+    console.log("BACKEND RECEIVED:", req.body);
+    // 1. Get userId along with other data
+    const { topic, subject, tone, userId } = req.body; 
 
-    // 1. Validate
-    if (!topic || !subject || !tone) {
-      return res.status(400).json({ message: "All fields are required" });
+    // Validate userId exists
+    if (!userId) {
+        return res.status(401).json({ message: "User ID is missing. Please log in." });
     }
+    
+    // ... (Validation and Prompt Generation remain the same) ...
 
-    // 2. Call your separate API file
-    // The controller doesn't need to know HOW Gemini works, just that it returns text.
+    // Call your helper function
     const aiText = await generateMessage(topic, subject, tone);
 
-    // 3. Save to DB
+    // 2. Save with the User ID
     const newEntry = new UserResponse({
+      userId: userId, // <--- SAVING THE ID
       topic,
       subject,
       tone,
@@ -25,11 +29,10 @@ exports.AIResponse = async (req, res) => {
     
     await newEntry.save();
 
-    // 4. Send Response
     res.status(200).json({ response: aiText });
 
   } catch (error) {
-    console.error("Controller Error:", error.message);
+    console.error("Controller Error:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };

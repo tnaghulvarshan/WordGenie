@@ -1,11 +1,7 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import lamp from "./img/lamp.jpg";
 // import icon1 from "../img/icon1.png";
-// import icon2 from "../img/icon2.png";
-// import icon3 from "../img/icon3.png";
-// import icon4 from "../img/icon4.png";
 
 function Home() {
   // 1. STATE: Variables to hold your data
@@ -17,24 +13,47 @@ function Home() {
 
   // 2. THE ENGINE: Function to call your Backend
   const handleGenerate = async () => {
+    // --- DEBUGGING START ---
+    const storedUser = localStorage.getItem("user");
+    console.log("1. Raw LocalStorage:", storedUser);
+
+    if (!storedUser) {
+      alert("No user found in local storage. Please log in.");
+      return;
+    }
+
+    const parsedUser = JSON.parse(storedUser);
+    console.log("2. Parsed Object:", parsedUser);
+
+    // CRITICAL CHECK: Extract the ID
+    const userId = parsedUser.id || parsedUser._id;
+    console.log("3. Extracted User ID:", userId);
+    // --- DEBUGGING END ---
+
+    if (!userId) {
+        alert("Found user data, but NO ID. Check console.");
+        return;
+    }
+
     // Validation
     if (!topic || !subject || !tone) {
-      alert("Please select a Topic, Tone, and enter a Subject!");
-      return;
+        alert("Please fill in all fields!");
+        return;
     }
 
     setLoading(true);
     setOutput("Generating your message... please wait.");
-
+    
     try {
-      // Connect to your specific Backend URL
+      // 3. SEND REQUEST TO BACKEND
       const res = await axios.post("http://localhost:5000/api/request/ai", {
+        userId: userId, // <--- Sending the ID
         topic: topic,
         subject: subject,
         tone: tone
       });
 
-      // Update the output box with the response from the server
+      // 4. UPDATE UI WITH RESPONSE
       setOutput(res.data.response); 
 
     } catch (error) {
@@ -44,6 +63,8 @@ function Home() {
       setLoading(false);
     }
   };
+
+  // 3. THE UI
   return (
     <div className="container-fluid">
       {/* Hero Section */}
@@ -56,41 +77,44 @@ function Home() {
             Generate emails, texts, LinkedIn messages, and more in seconds.
           </p>
 
-          <div className="d-flex flex-wrap gap-2 border mt-4">
-  {/* Topic Dropdown */}
-  <select className="form-select w-auto"
-  value={topic}
+          <div className="d-flex flex-wrap gap-2 border mt-4 p-4 rounded shadow-sm bg-white">
+            {/* Topic Dropdown */}
+            <select 
+              className="form-select w-auto"
+              value={topic}
               onChange={(e) => setTopic(e.target.value)}
-  >
-    <option value="">Select Topic</option>
-    <option value="email">Email</option>
-    <option value="texting">Texting</option>
-    <option value="linkedin">LinkedIn</option>
-    <option value="captions">Captions</option>
-  </select>
+            >
+              <option value="">Select Topic</option>
+              <option value="email">Email</option>
+              <option value="texting">Texting</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="captions">Captions</option>
+            </select>
 
-  {/* Subject Input */}
- <input
-    type="text"
-    className="form-control w-50"
-    placeholder="Subject"
-    value={subject}  // <--- ADD THIS
-    onChange={(e) => setSubject(e.target.value)}  
-  />
+            {/* Subject Input */}
+            <input
+              type="text"
+              className="form-control w-50"
+              placeholder="Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
 
-  {/* Tone Dropdown */}
-  <select className="form-select w-auto"
-  value={tone}
+            {/* Tone Dropdown */}
+            <select 
+              className="form-select w-auto"
+              value={tone}
               onChange={(e) => setTone(e.target.value)}
-  >
-    <option value="">Select Tone</option>
-    <option value="formal">Formal</option>
-    <option value="friendly">Friendly</option>
-    <option value="funny">Funny</option>
-    <option value="motivational">Motivational</option>
-  </select>
-  <div className="w-100 border text-center ">
-    <label className="fw-bold text-secondary small">AI Output:</label>
+            >
+              <option value="">Select Tone</option>
+              <option value="formal">Formal</option>
+              <option value="friendly">Friendly</option>
+              <option value="funny">Funny</option>
+              <option value="motivational">Motivational</option>
+            </select>
+
+            <div className="w-100 mt-3">
+              <label className="fw-bold text-secondary small">AI Output:</label>
               <textarea 
                 className="form-control"
                 rows="6"
@@ -99,16 +123,17 @@ function Home() {
                 readOnly
                 style={{ backgroundColor: "#f8f9fa", resize: "none" }}
               ></textarea>
+            </div>
 
-  </div>
-
-  {/* Button */}
-  <button className="btn btn-primary px-4 fw-semibold"
-  onClick={handleGenerate}
-              disabled={loading}>
-   {loading ? "Genie is Thinking..." : "Generate Message ✨"}
-  </button>
-</div>
+            {/* Button */}
+            <button 
+              className="btn btn-primary px-4 fw-semibold w-100 mt-3"
+              onClick={handleGenerate}
+              disabled={loading}
+            >
+              {loading ? "Genie is Thinking..." : "Generate Message ✨"}
+            </button>
+          </div>
         </div>
 
         <div className="col-md-6 text-center mt-5 mt-md-0">
@@ -116,47 +141,32 @@ function Home() {
         </div>
       </div>
 
-      {/* Features */}
+      {/* Features Section */}
       <div className="container my-5">
         <h2 className="text-center fw-bold mb-4">Features</h2>
         <div className="row g-4">
           <div className="col-md-6 col-lg-3">
             <div className="card border-0 shadow-sm h-100 text-center p-4">
-              {/* <img src={icon1} alt="feature" width="40" className="mx-auto mb-3" /> */}
               <h5 className="fw-bold">Multi-Platform Messages</h5>
-              <p className="text-secondary small">
-                Email, WhatsApp, LinkedIn, Tweets...
-              </p>
+              <p className="text-secondary small">Email, WhatsApp, LinkedIn, Tweets...</p>
             </div>
           </div>
-
           <div className="col-md-6 col-lg-3">
             <div className="card border-0 shadow-sm h-100 text-center p-4">
-              {/* <img src={icon2} alt="feature" width="40" className="mx-auto mb-3" /> */}
               <h5 className="fw-bold">Customizable Tone</h5>
-              <p className="text-secondary small">
-                Formal, Funny, Friendly, Motivational...
-              </p>
+              <p className="text-secondary small">Formal, Funny, Friendly, Motivational...</p>
             </div>
           </div>
-
           <div className="col-md-6 col-lg-3">
             <div className="card border-0 shadow-sm h-100 text-center p-4">
-              {/* <img src={icon3} alt="feature" width="40" className="mx-auto mb-3" /> */}
               <h5 className="fw-bold">Save & Reuse Messages</h5>
-              <p className="text-secondary small">
-                Drafts stored for later.
-              </p>
+              <p className="text-secondary small">Drafts stored for later.</p>
             </div>
           </div>
-
           <div className="col-md-6 col-lg-3">
             <div className="card border-0 shadow-sm h-100 text-center p-4">
-              {/* <img src={icon4} alt="feature" width="40" className="mx-auto mb-3" /> */}
               <h5 className="fw-bold">Instant Results</h5>
-              <p className="text-secondary small">
-                AI generates messages in seconds.
-              </p>
+              <p className="text-secondary small">AI generates messages in seconds.</p>
             </div>
           </div>
         </div>
@@ -166,15 +176,9 @@ function Home() {
       <div className="container my-5 text-center">
         <h2 className="fw-bold mb-4">How It Works</h2>
         <div className="row justify-content-center g-4">
-          <div className="col-md-4">
-            <h5>Enter your message topic</h5>
-          </div>
-          <div className="col-md-4">
-            <h5>Choose tone & type</h5>
-          </div>
-          <div className="col-md-4">
-            <h5>Generate & copy message</h5>
-          </div>
+          <div className="col-md-4"><h5>Enter your message topic</h5></div>
+          <div className="col-md-4"><h5>Choose tone & type</h5></div>
+          <div className="col-md-4"><h5>Generate & copy message</h5></div>
         </div>
       </div>
     </div>
