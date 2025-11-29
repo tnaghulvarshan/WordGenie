@@ -1,0 +1,15 @@
+const express = require('express');
+const router = express.Router();
+const { signup, login } = require('../controllers/authController');
+
+console.log("Auth Routes File is being read!"); 
+
+// WRONG: router.post('/api/auth/signup', signup); 
+// CORRECT: Just use '/' or '/signup'
+router.post('/signup', signup);
+
+// WRONG: router.post('/api/auth/login', login);
+// CORRECT: Just use '/login'
+router.post('/login', login);
+
+module.exports = router;

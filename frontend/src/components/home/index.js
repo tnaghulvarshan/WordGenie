@@ -1,0 +1,184 @@
+import React from "react";
+import { useState } from "react";
+import axios from "axios";
+import lamp from "./img/lamp.jpg";
+// import icon1 from "../img/icon1.png";
+// import icon2 from "../img/icon2.png";
+// import icon3 from "../img/icon3.png";
+// import icon4 from "../img/icon4.png";
+
+function Home() {
+  // 1. STATE: Variables to hold your data
+  const [topic, setTopic] = useState("");
+  const [subject, setSubject] = useState("");
+  const [tone, setTone] = useState("");
+  const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // 2. THE ENGINE: Function to call your Backend
+  const handleGenerate = async () => {
+    // Validation
+    if (!topic || !subject || !tone) {
+      alert("Please select a Topic, Tone, and enter a Subject!");
+      return;
+    }
+
+    setLoading(true);
+    setOutput("Generating your message... please wait.");
+
+    try {
+      // Connect to your specific Backend URL
+      const res = await axios.post("http://localhost:5000/api/request/ai", {
+        topic: topic,
+        subject: subject,
+        tone: tone
+      });
+
+      // Update the output box with the response from the server
+      setOutput(res.data.response); 
+
+    } catch (error) {
+      console.error("Error connecting to server:", error);
+      setOutput("Error: Could not connect to the backend. Is it running on port 5000?");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="container-fluid">
+      {/* Hero Section */}
+      <div className="row align-items-center justify-content-center text-center text-md-start py-5 container mx-auto">
+        <div className="col-md-6">
+          <h1 className="fw-bold display-5">
+            Your AI Genie for <br /> Perfect Messages
+          </h1>
+          <p className="lead text-secondary mt-3">
+            Generate emails, texts, LinkedIn messages, and more in seconds.
+          </p>
+
+          <div className="d-flex flex-wrap gap-2 border mt-4">
+  {/* Topic Dropdown */}
+  <select className="form-select w-auto"
+  value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+  >
+    <option value="">Select Topic</option>
+    <option value="email">Email</option>
+    <option value="texting">Texting</option>
+    <option value="linkedin">LinkedIn</option>
+    <option value="captions">Captions</option>
+  </select>
+
+  {/* Subject Input */}
+ <input
+    type="text"
+    className="form-control w-50"
+    placeholder="Subject"
+    value={subject}  // <--- ADD THIS
+    onChange={(e) => setSubject(e.target.value)}  
+  />
+
+  {/* Tone Dropdown */}
+  <select className="form-select w-auto"
+  value={tone}
+              onChange={(e) => setTone(e.target.value)}
+  >
+    <option value="">Select Tone</option>
+    <option value="formal">Formal</option>
+    <option value="friendly">Friendly</option>
+    <option value="funny">Funny</option>
+    <option value="motivational">Motivational</option>
+  </select>
+  <div className="w-100 border text-center ">
+    <label className="fw-bold text-secondary small">AI Output:</label>
+              <textarea 
+                className="form-control"
+                rows="6"
+                placeholder="The magic will appear here..."
+                value={output}
+                readOnly
+                style={{ backgroundColor: "#f8f9fa", resize: "none" }}
+              ></textarea>
+
+  </div>
+
+  {/* Button */}
+  <button className="btn btn-primary px-4 fw-semibold"
+  onClick={handleGenerate}
+              disabled={loading}>
+   {loading ? "Genie is Thinking..." : "Generate Message ✨"}
+  </button>
+</div>
+        </div>
+
+        <div className="col-md-6 text-center mt-5 mt-md-0">
+          <img src={lamp} alt="lamp" className="w-50" />
+        </div>
+      </div>
+
+      {/* Features */}
+      <div className="container my-5">
+        <h2 className="text-center fw-bold mb-4">Features</h2>
+        <div className="row g-4">
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 text-center p-4">
+              {/* <img src={icon1} alt="feature" width="40" className="mx-auto mb-3" /> */}
+              <h5 className="fw-bold">Multi-Platform Messages</h5>
+              <p className="text-secondary small">
+                Email, WhatsApp, LinkedIn, Tweets...
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 text-center p-4">
+              {/* <img src={icon2} alt="feature" width="40" className="mx-auto mb-3" /> */}
+              <h5 className="fw-bold">Customizable Tone</h5>
+              <p className="text-secondary small">
+                Formal, Funny, Friendly, Motivational...
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 text-center p-4">
+              {/* <img src={icon3} alt="feature" width="40" className="mx-auto mb-3" /> */}
+              <h5 className="fw-bold">Save & Reuse Messages</h5>
+              <p className="text-secondary small">
+                Drafts stored for later.
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 text-center p-4">
+              {/* <img src={icon4} alt="feature" width="40" className="mx-auto mb-3" /> */}
+              <h5 className="fw-bold">Instant Results</h5>
+              <p className="text-secondary small">
+                AI generates messages in seconds.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works */}
+      <div className="container my-5 text-center">
+        <h2 className="fw-bold mb-4">How It Works</h2>
+        <div className="row justify-content-center g-4">
+          <div className="col-md-4">
+            <h5>Enter your message topic</h5>
+          </div>
+          <div className="col-md-4">
+            <h5>Choose tone & type</h5>
+          </div>
+          <div className="col-md-4">
+            <h5>Generate & copy message</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Home;
