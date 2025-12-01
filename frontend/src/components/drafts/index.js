@@ -47,7 +47,7 @@ function Drafts() {
   };
 
   return (
-    <div className='container border my-5 py-4'>
+    <div className='container  my-5 py-4'>
       <div className='w-75 mx-auto'>
         <h1 className="mb-4 text-center">My Drafts</h1>
 
