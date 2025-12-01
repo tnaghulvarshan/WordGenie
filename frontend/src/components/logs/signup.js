@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./auth.css";
 
 function Signup() {
@@ -15,20 +15,39 @@ function Signup() {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_Backend_API}/auth/signup`, {
-
+      // 1. Signup Request
+      // 👇 UPDATED: Uses your .env variable
+      const signupRes = await fetch(`${process.env.REACT_APP_Backend_API}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await res.json();
-      setLoading(false);
+      const signupData = await signupRes.json();
+      if (!signupRes.ok) throw new Error(signupData.message);
 
-      if (!res.ok) throw new Error(data.message);
+      // 2. Auto-Login Request
+      // 👇 UPDATED: Uses your .env variable
+      const loginRes = await fetch(`${process.env.REACT_APP_Backend_API}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      alert("Signup successful! Please login.");
+      const loginData = await loginRes.json();
+      if (!loginRes.ok) {
+        alert("Account created! Please log in.");
+        navigate("/login");
+        return;
+      }
+
+      localStorage.clear();
+      localStorage.setItem("token", loginData.token);
+      localStorage.setItem("user", JSON.stringify(loginData.user));
+
+      alert("Account created & Logged in!");
       navigate("/");
+
     } catch (err) {
       setLoading(false);
       setError(err.message || "Signup failed");
@@ -42,10 +61,8 @@ function Signup() {
         {/* Left Side */}
         <div className="auth-left text-white d-flex flex-column justify-content-center align-items-center p-5 rounded-start">
           <div className="text-center">
-            <div className="logo-circle mb-3"></div>
             <h1 className="fw-bold">Join Us Today!</h1>
             <p className="small">Create your account and start your journey.</p>
-            <button className="btn btn-outline-light mt-3">Learn More</button>
           </div>
         </div>
 
@@ -98,9 +115,9 @@ function Signup() {
 
           <p className="text-center small">
             Already have an account?{" "}
-            <a href="/login" className="text-decoration-none fw-semibold">
+            <Link to="/login" className="text-decoration-none fw-semibold">
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>

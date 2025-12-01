@@ -13,7 +13,7 @@ function Drafts() {
         const parsedUser = JSON.parse(storedUser);
         const userId = parsedUser.id || parsedUser._id;
 
-        const res = await axios.get(`http://localhost:5000/api/request/history/${userId}`);
+        const res = await axios.get(`${process.env.REACT_APP_Backend_API}/request/history/${userId}`);
         setDrafts(res.data);
       } catch (error) {
         console.error("Error fetching drafts:", error);
@@ -36,7 +36,7 @@ function Drafts() {
 
     try {
       // 2. Call Backend API
-      await axios.delete(`http://localhost:5000/api/request/history/${id}`);
+      await axios.delete(`${process.env.REACT_APP_Backend_API}/request/history/${id}`);
 
       // 3. Update UI immediately (Remove item from list without reloading)
       setDrafts(drafts.filter((item) => item._id !== id));

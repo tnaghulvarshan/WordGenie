@@ -17,6 +17,7 @@ function Home() {
   // 2. THE ENGINE: Function to call your Backend
   const handleGenerate = async () => {
     // --- DEBUGGING START ---
+    console.log("MY API URL IS:", process.env.REACT_APP_Backend_API);
     const storedUser = localStorage.getItem("user");
     console.log("1. Raw LocalStorage:", storedUser);
 
@@ -50,7 +51,9 @@ function Home() {
     
     try {
       // 3. SEND REQUEST TO BACKEND
-      const res = await axios.post("http://localhost:5000/api/request/ai", {
+      // ⚠️ CRITICAL FIX: The characters below are BACKTICKS (`), not single quotes (')
+      // They are located above the TAB key on your keyboard.
+      const res = await axios.post(`${process.env.REACT_APP_Backend_API}/request/ai`, {
         userId: userId, 
         topic: topic,
         subject: subject,

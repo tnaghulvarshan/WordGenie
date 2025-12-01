@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import "./auth.css";
 
 function Login() {
@@ -9,41 +9,35 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
- const handleLogin = async () => {
-  setLoading(true);
-  setError("");
+  const handleLogin = async () => {
+    setLoading(true);
+    setError("");
 
-  try {
-    const res = await fetch(`${process.env.REACT_APP_Backend_API}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      // 👇 UPDATED: Uses your .env variable
+      const res = await fetch(`${process.env.REACT_APP_Backend_API}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
-    setLoading(false);
+      const data = await res.json();
+      setLoading(false);
 
-    if (!res.ok) throw new Error(data.message);
+      if (!res.ok) throw new Error(data.message);
 
-    // Clear previous data
-    localStorage.clear();
+      localStorage.clear();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-    // Save token and user info
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify({
-      id: data.user.id,
-      name: data.user.name,
-      email: data.user.email
-    }));
-
-    alert("Login successful!");
-    navigate("/");
-  } catch (err) {
-    setLoading(false);
-    setError(err.message || "Login failed");
-  }
-};
-
+      alert("Login successful!");
+      navigate("/");
+      
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Login failed");
+    }
+  };
 
   return (
     <div className="auth-container d-flex align-items-center justify-content-center vh-100 bg-gradient">
@@ -52,10 +46,8 @@ function Login() {
         {/* Left Side */}
         <div className="auth-left text-white d-flex flex-column justify-content-center align-items-center p-5 rounded-start">
           <div className="text-center">
-            <div className="logo-circle mb-3"></div>
             <h1 className="fw-bold">Hello, welcome!</h1>
             <p className="small">Login to continue your AI journey.</p>
-            <button className="btn btn-outline-light mt-3">View more</button>
           </div>
         </div>
 
@@ -97,9 +89,10 @@ function Login() {
 
           <p className="text-center small">
             Not a member yet?{" "}
-            <a href="/signup" className="text-decoration-none fw-semibold">
+            {/* Use Link instead of <a> to stop page reload */}
+            <Link to="/signup" className="text-decoration-none fw-semibold">
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
