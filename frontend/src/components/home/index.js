@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import lamp from "./img/lamp.jpg";
+import "./index.css";
+import lamp from "./img/lamp.mp4";
 // import icon1 from "../img/icon1.png";
 
 function Home() {
@@ -92,7 +93,7 @@ function Home() {
     <div className="container-fluid">
       {/* Hero Section */}
       <div className="row align-items-center justify-content-center text-center text-md-start py-5 container mx-auto">
-        <div className="col-md-6">
+        <div className="col-md-6  ">
           <h1 className="fw-bold display-5">
             Your AI Genie for <br /> Perfect Messages
           </h1>
@@ -174,8 +175,11 @@ function Home() {
           </div>
         </div>
 
-        <div className="col-md-6 text-center mt-5 mt-md-0">
-          <img src={lamp} alt="lamp" className="w-50" />
+        <div className="col-md-6 img-bg text-center    mt-5 mt-md-0">
+        
+         <video className="background-video w-100 my-auto" autoPlay loop muted playsInline>
+        <source src={lamp} type="video/mp4" />
+      </video>
         </div>
       </div>
 
