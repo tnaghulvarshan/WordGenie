@@ -10,7 +10,7 @@ function Navbar() {
   window.location.href = "/login";
 };
   return (
-    <nav className="navbar navbar-expand-lg bg-white shadow-sm py-3">
+    <nav className="navbar sticky-top navbar-expand-lg bg-white shadow-sm py-3">
       <div className="container">
         <a className="navbar-brand fw-bold fs-4 d-flex align-items-center" href="#">
           <img

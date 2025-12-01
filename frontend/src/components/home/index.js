@@ -66,7 +66,7 @@ function Home() {
 
   // 3. THE UI
   return (
-    <div className="container-fluid">
+    <div className="container-fluid ">
       {/* Hero Section */}
       <div className="row align-items-center justify-content-center text-center text-md-start py-5 container mx-auto">
         <div className="col-md-6">
