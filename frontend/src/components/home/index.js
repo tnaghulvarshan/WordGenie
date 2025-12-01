@@ -10,6 +10,9 @@ function Home() {
   const [tone, setTone] = useState("");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // NEW: State to handle the copy button feedback
+  const [copied, setCopied] = useState(false);
 
   // 2. THE ENGINE: Function to call your Backend
   const handleGenerate = async () => {
@@ -42,12 +45,13 @@ function Home() {
     }
 
     setLoading(true);
+    setCopied(false); // Reset copy status when generating new
     setOutput("Generating your message... please wait.");
     
     try {
       // 3. SEND REQUEST TO BACKEND
       const res = await axios.post("http://localhost:5000/api/request/ai", {
-        userId: userId, // <--- Sending the ID
+        userId: userId, 
         topic: topic,
         subject: subject,
         tone: tone
@@ -64,9 +68,25 @@ function Home() {
     }
   };
 
+  // NEW: Function to handle copying text
+  const handleCopy = () => {
+    if (!output) return;
+    
+    // Write text to clipboard
+    navigator.clipboard.writeText(output);
+    
+    // Update state to show "Copied!"
+    setCopied(true);
+    
+    // Reset back to "Copy" after 2 seconds
+    setTimeout(() => {
+        setCopied(false);
+    }, 2000);
+  };
+
   // 3. THE UI
   return (
-    <div className="container-fluid ">
+    <div className="container-fluid">
       {/* Hero Section */}
       <div className="row align-items-center justify-content-center text-center text-md-start py-5 container mx-auto">
         <div className="col-md-6">
@@ -114,7 +134,22 @@ function Home() {
             </select>
 
             <div className="w-100 mt-3">
-              <label className="fw-bold text-secondary small">AI Output:</label>
+              {/* Flexbox to align Label and Copy Button */}
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="fw-bold text-secondary small">AI Output:</label>
+                
+                {/* NEW: Copy Button (Only shows if there is output) */}
+                {output && (
+                    <button 
+                        className={`btn btn-sm ${copied ? 'btn-success' : 'btn-outline-secondary'}`}
+                        onClick={handleCopy}
+                        title="Copy to clipboard"
+                    >
+                        {copied ? "Copied! ✅" : "Copy Text 📋"}
+                    </button>
+                )}
+              </div>
+
               <textarea 
                 className="form-control"
                 rows="6"
